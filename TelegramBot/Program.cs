@@ -279,7 +279,7 @@ namespace TelegramBot
 
         private static string GetTeamStr(string team, string teamToValue, int result = -1)
         {
-            return result == -1 ? team == teamToValue ? $"**{team}**" : team : team == teamToValue ? $"**{result}**" : result.ToString();
+            return result == -1 ? team == teamToValue ? $"**{teamToValue}**" : teamToValue : team == teamToValue ? $"**{result}**" : result.ToString();
         }
     }
 }
