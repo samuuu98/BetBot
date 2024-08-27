@@ -63,10 +63,15 @@ namespace TelegramBot
             var me = t.GetAwaiter().GetResult();
 
             Log.Information($"Start listening for @{me.Username}");
-            Console.ReadLine();
 
+            while (true)
+            { }
+
+            Log.Information($"Stopping");
             // Send cancellation request to stop bot
             cts.Cancel();
+
+            DirettaScraper.Browser.Close();
         }
 
         public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -236,7 +241,7 @@ namespace TelegramBot
                     foreach (var match in StatManager.GetHistoryMatchesByTeam(home, comp).Take(7))
                     {
                         strBuilder.AppendLine($"{match.Date.ToShortDateString()} - {match.Competition.Name}");
-                        strBuilder.AppendLine($"{GetTeamStr(home, match.Home)} {GetTeamStr(home, match.Home, match.Result.Home)} - {GetTeamStr(home, match.Away)} {GetTeamStr(home, match.Away, match.Result.Away)}");
+                        strBuilder.AppendLine($"{GetTeamStr(home, match.Home)} {GetTeamStr(home, match.Home, match.Result.Home)} - {GetTeamStr(home, match.Away, match.Result.Away)} {GetTeamStr(home, match.Away)} ");
                         strBuilder.AppendLine($"Tiri:  {GetTeamStr(home, match.Home, match.Result.HomeShot)}-{GetTeamStr(home, match.Away, match.Result.AwayShot)}, In porta:  {GetTeamStr(home, match.Home, match.Result.HomeShotOnTarget)}-{GetTeamStr(home, match.Away, match.Result.AwayShotOnTarget)}, Corner:  {GetTeamStr(home, match.Home, match.Result.HomeCorner)}- {GetTeamStr(home, match.Away, match.Result.AwayCorner)}\n");
                     }
                 }
@@ -279,7 +284,7 @@ namespace TelegramBot
 
         private static string GetTeamStr(string team, string teamToValue, int result = -1)
         {
-            return result == -1 ? team == teamToValue ? $"**{teamToValue}**" : teamToValue : team == teamToValue ? $"**{result}**" : result.ToString();
+            return result == -1 ? team == teamToValue ? $"*{teamToValue}*" : teamToValue : team == teamToValue ? $"*{result}*" : result.ToString();
         }
     }
 }

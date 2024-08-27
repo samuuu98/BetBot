@@ -16,7 +16,7 @@ namespace Scraper
 {
     public class DirettaScraper
     {
-        private IWebDriver Browser { get; set; }
+        public IWebDriver Browser { get; set; }
 
         public DirettaScraper()
         {
@@ -28,7 +28,8 @@ namespace Scraper
             string seleniumUrl = Environment.GetEnvironmentVariable("SELENIUM_REMOTE_URL") ?? "http://localhost:4444";
             Log.Information("Utilizzo dell'URL Selenium: {SeleniumUrl}", seleniumUrl);
 
-            options.AddArguments(new List<string>() { "headless", "disable-gpu", "--silent", "log-level=3", "--disable-search-engine-choice-screen" });
+            options.AddArguments(new List<string>() { "disable-gpu", "--silent", "log-level=3", "--disable-search-engine-choice-screen" });
+            //options.AddArguments(new List<string>() { "headless", "disable-gpu", "--silent", "log-level=3", "--disable-search-engine-choice-screen" });
             //Browser = new ChromeDriver(@"C:\Users\Samuele\Downloads\chromedriver-win64", options);
 
             var connected = false;
@@ -36,9 +37,12 @@ namespace Scraper
             {
                 connected = TryToOpenBrowser(seleniumUrl, options);
 
-                Wait();
-                Wait();
-                Wait();
+                if (!connected)
+                {
+                    Wait();
+                    Wait();
+                    Wait();
+                }
             }
 
             //Click sulle live
@@ -108,7 +112,8 @@ namespace Scraper
             {
                 var res = new Dictionary<string, List<(string Home, int HomeRes, Dictionary<EStatsType, List<int>> HomeStats, string Away, int AwayRes, Dictionary<EStatsType, List<int>> AwayStats, DateTime Date)>>();
 
-                Browser.FindElement(By.ClassName("searchIcon")).Click();
+                var searchElement = Browser.FindElement(By.ClassName("searchIcon"));
+                Click(searchElement);
                 Log.Information($"Clicked on search");
 
                 var search = Browser.FindElement(By.ClassName("searchInput__input"));
@@ -122,7 +127,7 @@ namespace Scraper
                 if (resultSearch == null)
                 {
                     Log.Information($"Non ho trovato: {teamName}");
-                    
+
                     var back = Browser.FindElements(By.ClassName("searchResult")).FirstOrDefault();
                     Click(back);
 
@@ -383,7 +388,7 @@ namespace Scraper
             }
             catch (Exception ex)
             {
-                //Log.Information(ex);
+                Log.Information(ex.ToString());
                 return null;
             }
         }
@@ -444,7 +449,7 @@ namespace Scraper
             }
         }
 
-        private bool TryToOpenBrowser(string seleniumUrl, ChromeOptions options) 
+        private bool TryToOpenBrowser(string seleniumUrl, ChromeOptions options)
         {
             try
             {
